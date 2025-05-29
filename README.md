@@ -1,3 +1,15 @@
 # NC News Seeding
 
-- Instructions for this sprint can be found at https://l2c.northcoders.com/courses/be/seeding-nc-news
+# Setting up development Environment:
+
+- in the root directory of this repo, create a file named .env.development
+- within this file, add
+
+PGDATABASE=nc_news
+
+# Setting up test Environment
+
+- in the root directory of this repo, create a file named .env.test
+- within this file, add
+
+PGDATABASE=nc_news_test

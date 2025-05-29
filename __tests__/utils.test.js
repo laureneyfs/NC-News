@@ -1,5 +1,6 @@
 const {
-  convertTimestampToDate
+  convertTimestampToDate,
+  translateArticleNameToId,
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -38,3 +39,71 @@ describe("convertTimestampToDate", () => {
   });
 });
 
+describe("translateArticleNameToId", () => {
+  test("returns the correct id when passed array with one entry", () => {
+    const input = [{ article_id: 1, title: "this one" }];
+    const result = translateArticleNameToId(input, "this one");
+    const expected = 1;
+    expect(result).toBe(expected);
+  });
+
+  test("returns the correct id when passed array with multiple entries with no irrelevant fields", () => {
+    const input = [
+      { article_id: 2, title: "not this one" },
+      { article_id: 1, title: "this one" },
+    ];
+    const result = translateArticleNameToId(input, "this one");
+    const expected = 1;
+    expect(result).toBe(expected);
+  });
+  test("returns the correct id when passed array with multiple items that contain irrelevant fields", () => {
+    const input = [
+      {
+        article_id: 10,
+        title: "Seven inspirational thought leaders from Manchester UK",
+        topic: "mitch",
+        author: "rogersop",
+        body: "Who are we kidding, there is only one, and it's Mitch!",
+        votes: 0,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      },
+      {
+        article_id: 11,
+        title: "Am I a cat?",
+        topic: "mitch",
+        author: "icellusedkars",
+        body: "Having run out of ideas for articles, I am staring at the wall blankly, like a cat. Does this make me a cat?",
+        votes: 0,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      },
+      {
+        article_id: 12,
+        title: "Moustache",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "Have you seen the size of that thing?",
+        votes: 0,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      },
+      {
+        article_id: 13,
+        title: "Another article about Mitch",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "There will never be enough articles about Mitch!",
+        votes: 0,
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      },
+    ];
+    const result = translateArticleNameToId(
+      input,
+      "Seven inspirational thought leaders from Manchester UK"
+    );
+    const expected = 10;
+    expect(result).toBe(expected);
+  });
+});

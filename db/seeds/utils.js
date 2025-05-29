@@ -5,5 +5,10 @@ exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   return { created_at: new Date(created_at), ...otherProperties };
 };
 
-
-
+exports.translateArticleNameToId = (promiseReturn, name) => {
+  for (i = 0; i < promiseReturn.length; i++) {
+    if (promiseReturn[i].title === name) {
+      return promiseReturn[i].article_id;
+    }
+  }
+};
