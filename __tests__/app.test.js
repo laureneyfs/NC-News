@@ -129,10 +129,30 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: POSTs valid data and Returns POSTed object", () => {
+    const data = { username: "icellusedkars", body: "test test" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(data)
+      .expect(201)
+      .then((response) => {
+        const { comment_id, article_id, body, votes, author, created_at } =
+          response.body.newComment;
+
+        expect(typeof comment_id).toBe("number");
+        expect(article_id).toBe(1);
+        expect(body).toBe("test test");
+        expect(votes).toBe(0);
+        expect(author).toBe("icellusedkars");
+        expect(typeof created_at).toBe("string");
+      });
+  });
+});
+
 describe("PATCH /api/articles/:article_id", () => {
-  test.only("200: Returns updated object of the updated fields of the article requested", async () => {
-    const data = { inc_votes: 10 };
-    let currentVotes = 0;
+  test("200: Returns updated object of the updated fields of the article requested", async () => {
+    const data = { inc_votes: -10 };
     const before = await request(app)
       .get("/api/articles/1")
       .expect(200)
@@ -147,6 +167,6 @@ describe("PATCH /api/articles/:article_id", () => {
         return body.adjustedArticle.votes;
       });
 
-    expect(after - 10).toBe(before);
+    expect(after + 10).toBe(before);
   });
 });
