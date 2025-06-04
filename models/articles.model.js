@@ -11,4 +11,14 @@ const fetchArticles = () => {
     });
 };
 
-module.exports = { fetchArticles };
+const fetchArticleById = (req, res) => {
+  const { article_id } = req.params;
+  return db
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+    .then(({ rows }) => {
+      const article = rows[0];
+      return article;
+    });
+};
+
+module.exports = { fetchArticles, fetchArticleById };
