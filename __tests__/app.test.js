@@ -63,7 +63,7 @@ describe("GET /api/articles", () => {
 });
 
 describe("GET /api/users", () => {
-  test.only("200: Responds with an object of the users table from our database", () => {
+  test("200: Responds with an object of the users table from our database", () => {
     return request(app)
       .get("/api/users")
       .expect(200)
@@ -79,7 +79,7 @@ describe("GET /api/users", () => {
 });
 
 describe("GET /api/articles/:article_id", () => {
-  test.only("200: Responds with an object of the user that has the requested user_id from our users table", () => {
+  test("200: Responds with an object of the user that has the requested user_id from our users table", () => {
     return request(app)
       .get("/api/articles/2")
       .expect(200)
@@ -107,6 +107,24 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
-// describe("GET /api/articles/:article_id/comments", () => {
-//   test
-// });
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an array of the comments on the article requested", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        const commentsArray = response.body.comments;
+        expect(commentsArray.length).not.toBe(0);
+        commentsArray.forEach((comment) => {
+          const { comment_id, votes, created_at, author, body, article_id } =
+            comment;
+          expect(typeof comment_id).toBe("number");
+          expect(typeof votes).toBe("number");
+          expect(typeof created_at).toBe("string");
+          expect(typeof author).toBe("string");
+          expect(typeof body).toBe("string");
+          expect(article_id).toBe(1);
+        });
+      });
+  });
+});
