@@ -21,4 +21,18 @@ const fetchArticleById = (req, res) => {
     });
 };
 
-module.exports = { fetchArticles, fetchArticleById };
+const adjustArticleVotesById = (req, res) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+      [inc_votes, article_id]
+    )
+    .then(({ rows }) => {
+      const updatedArticle = rows[0];
+      return updatedArticle;
+    });
+};
+
+module.exports = { fetchArticles, fetchArticleById, adjustArticleVotesById };

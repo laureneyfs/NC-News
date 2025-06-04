@@ -1,4 +1,8 @@
-const { fetchArticles, fetchArticleById } = require("../models/articles.model");
+const {
+  fetchArticles,
+  fetchArticleById,
+  adjustArticleVotesById,
+} = require("../models/articles.model");
 
 const getArticles = (req, res) => {
   return fetchArticles().then((articles) => {
@@ -12,4 +16,10 @@ const getArticleById = (req, res) => {
   });
 };
 
-module.exports = { getArticles, getArticleById };
+const patchArticleVotesById = (req, res) => {
+  return adjustArticleVotesById(req, res).then((adjustedArticle) => {
+    res.status(200).send({ adjustedArticle });
+  });
+};
+
+module.exports = { getArticles, getArticleById, patchArticleVotesById };

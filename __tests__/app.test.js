@@ -128,3 +128,25 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test.only("200: Returns updated object of the updated fields of the article requested", async () => {
+    const data = { inc_votes: 10 };
+    let currentVotes = 0;
+    const before = await request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        return body.article.votes;
+      });
+    const after = await request(app)
+      .patch("/api/articles/1")
+      .send(data)
+      .expect(200)
+      .then(({ body }) => {
+        return body.adjustedArticle.votes;
+      });
+
+    expect(after - 10).toBe(before);
+  });
+});
