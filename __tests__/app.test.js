@@ -170,3 +170,9 @@ describe("PATCH /api/articles/:article_id", () => {
     expect(after + 10).toBe(before);
   });
 });
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: deletes the comment that corresponds to comment_id + returns confirmation string", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+});

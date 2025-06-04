@@ -1,6 +1,7 @@
 const {
   fetchCommentsByArticleId,
   createComment,
+  removeComment,
 } = require("../models/comments.model");
 
 const getCommentsByArticleId = (req, res) => {
@@ -15,4 +16,14 @@ const postCommentByArticleId = (req, res) => {
   });
 };
 
-module.exports = { getCommentsByArticleId, postCommentByArticleId };
+const deleteCommentbyId = (req, res) => {
+  return removeComment(req, res).then((response) => {
+    res.status(204).send({ response });
+  });
+};
+
+module.exports = {
+  deleteCommentbyId,
+  getCommentsByArticleId,
+  postCommentByArticleId,
+};

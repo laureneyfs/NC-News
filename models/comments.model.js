@@ -23,4 +23,15 @@ const createComment = (req, res) => {
       return addedComment;
     });
 };
-module.exports = { fetchCommentsByArticleId, createComment };
+
+const removeComment = (req, res) => {
+  const { comment_id } = req.params;
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1`, [comment_id])
+    .then(() => {
+      const response = `successfully deleted comment ${comment_id}`;
+      return response;
+    });
+};
+
+module.exports = { fetchCommentsByArticleId, createComment, removeComment };
