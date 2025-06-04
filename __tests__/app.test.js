@@ -22,19 +22,42 @@ describe("GET /api", () => {
 });
 
 describe("GET /api/topics", () => {
-  test.only("200: Responds with an object of the topics table from our database", () => {
+  test("200: Responds with an object of the topics table from our database", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
       .then(({ body }) => {
-        console.log(body, "<== body");
-        console.log(body.topics);
         expect(body.topics.length).not.toBe(0);
         body.topics.forEach((topic) => {
           expect(typeof topic.slug).toBe("string");
           expect(typeof topic.description).toBe("string");
           expect(topic.hasOwnProperty("img_url")).toBe(true);
         });
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test.only("200: Responds with an object of the articles table from our database", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).not.toBe(0);
+        const createdAtArray = [];
+        body.articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+          createdAtArray.push(article.created_at);
+        });
+        const sortedCreatedAtArray = createdAtArray.sort().reverse();
+        expect(sortedCreatedAtArray).toEqual(createdAtArray);
       });
   });
 });
