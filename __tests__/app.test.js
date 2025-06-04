@@ -20,3 +20,21 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/topics", () => {
+  test.only("200: Responds with an object of the topics table from our database", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body, "<== body");
+        console.log(body.topics);
+        expect(body.topics.length).not.toBe(0);
+        body.topics.forEach((topic) => {
+          expect(typeof topic.slug).toBe("string");
+          expect(typeof topic.description).toBe("string");
+          expect(topic.hasOwnProperty("img_url")).toBe(true);
+        });
+      });
+  });
+});
