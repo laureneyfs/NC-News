@@ -4,21 +4,21 @@ const {
   removeComment,
 } = require("../models/comments.model");
 
-const getCommentsByArticleId = (req, res) => {
-  return fetchCommentsByArticleId(req, res).then((comments) => {
+const getCommentsByArticleId = (req, res, next) => {
+  return fetchCommentsByArticleId(req, res, next).then((comments) => {
     res.status(200).send({ comments });
   });
 };
 
-const postCommentByArticleId = (req, res) => {
-  return createComment(req, res).then((newComment) => {
+const postCommentByArticleId = (req, res, next) => {
+  return createComment(req, res, next).then((newComment) => {
     res.status(201).send({ newComment });
   });
 };
 
-const deleteCommentbyId = (req, res) => {
-  return removeComment(req, res).then((response) => {
-    res.status(204).send({ response });
+const deleteCommentbyId = (req, res, next) => {
+  return removeComment(req, res, next).then(() => {
+    res.status(204).send();
   });
 };
 

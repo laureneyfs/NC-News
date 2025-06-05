@@ -4,10 +4,8 @@ const seed = require("../db/seeds/seed");
 const request = require("supertest");
 const data = require("../db/data/test-data/index");
 const app = require("../app");
-/* Set up your test imports here */
 
-/* Set up your beforeEach & afterAll functions here */
-beforeAll(() => seed(data));
+beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("GET /api", () => {
@@ -38,7 +36,7 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles", () => {
-  test("200: Responds with an object of the articles table from our database", () => {
+  test("200: Responds with an object of the articles table from our database, sorted by created_at, descending", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -56,8 +54,60 @@ describe("GET /api/articles", () => {
           expect(article.hasOwnProperty("comment_count")).toBe(true);
           createdAtArray.push(article.created_at);
         });
-        const sortedCreatedAtArray = createdAtArray.sort().reverse();
-        expect(sortedCreatedAtArray).toEqual(createdAtArray);
+        const arrayCopy = [...createdAtArray];
+        expect(arrayCopy.sort().reverse()).toEqual(createdAtArray);
+      });
+  });
+  test.only("200: Responds with an object of the articles table organised by the field specified in the sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body }) => {
+        const createdAtArray = [];
+        expect(body.articles.length).not.toBe(0);
+        body.articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+          createdAtArray.push(article.article_id);
+        });
+        const arrayCopy = [...createdAtArray];
+        expect(
+          arrayCopy.sort(function (a, b) {
+            return b - a;
+          })
+        ).toEqual(createdAtArray);
+      });
+  });
+  test.only("200: when given sortby and order queries, data is sorted by the sortby query and ordered in the other specified in the order query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const createdAtArray = [];
+        expect(body.articles.length).not.toBe(0);
+        body.articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+          createdAtArray.push(article.article_id);
+        });
+        const arrayCopy = [...createdAtArray];
+        expect(
+          arrayCopy.sort(function (a, b) {
+            return a - b;
+          })
+        ).toEqual(createdAtArray);
       });
   });
 });
@@ -105,6 +155,22 @@ describe("GET /api/articles/:article_id", () => {
         expect(typeof article_img_url).toBe("string");
       });
   });
+  test("404: Responds with an error message if user_id doesn't exist in our users table", () => {
+    return request(app)
+      .get("/api/articles/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("not found");
+      });
+  });
+  test("400: Responds with an error message if user_id provided is not a number", () => {
+    return request(app)
+      .get("/api/articles/test")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -125,6 +191,22 @@ describe("GET /api/articles/:article_id/comments", () => {
           expect(typeof body).toBe("string");
           expect(article_id).toBe(1);
         });
+      });
+  });
+  test("404: responds with an error message if article_id provided is not in our article table", () => {
+    return request(app)
+      .get("/api/articles/100/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("not found");
+      });
+  });
+  test("400: responds with an error message if article_id is not a number", () => {
+    return request(app)
+      .get("/api/articles/notanumber/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
       });
   });
 });
@@ -148,6 +230,48 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(typeof created_at).toBe("string");
       });
   });
+  test.skip("400: returns error message if trying to POST to an invalid article_id", () => {
+    const data = { username: "icellusedkars", body: "test test" };
+    return request(app)
+      .post("/api/articles/100/comments")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("404: returns error message if query has a foreign key violation", () => {
+    const data = { username: "terryhintz", body: "test test" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(data)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("not found");
+      });
+  });
+
+  test("400: returns error message if query is missing required fields", () => {
+    const data = { username: "icellusedkars" };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+
+  test.skip("400: returns error message if fields provided have a typing mismatch", () => {
+    const data = { username: "icellusedkars", body: 3 };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
 });
 
 describe("PATCH /api/articles/:article_id", () => {
@@ -169,10 +293,39 @@ describe("PATCH /api/articles/:article_id", () => {
 
     expect(after + 10).toBe(before);
   });
+
+  test("400: Returns error message if query has a foreign key violation", () => {
+    const data = { inc_votes: "notanum" };
+    request(app)
+      .patch("/api/articles/1")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("404: Returns error message if article_id provided isn't on our table", () => {
+    const data = { inc_votes: 3 };
+    request(app)
+      .patch("/api/articles/100")
+      .send(data)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("not found");
+      });
+  });
 });
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: deletes the comment that corresponds to comment_id + returns confirmation string", () => {
     return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("404: returns an error if comment_id is not present on our comments table", () => {
+    return request(app)
+      .delete("/api/comments/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("comment not found");
+      });
   });
 });

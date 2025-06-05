@@ -4,20 +4,20 @@ const {
   adjustArticleVotesById,
 } = require("../models/articles.model");
 
-const getArticles = (req, res) => {
-  return fetchArticles().then((articles) => {
+const getArticles = (req, res, next) => {
+  return fetchArticles(req, res, next).then((articles) => {
     res.status(200).send({ articles });
   });
 };
 
-const getArticleById = (req, res) => {
-  return fetchArticleById(req, res).then((article) => {
+const getArticleById = (req, res, next) => {
+  return fetchArticleById(req, res, next).then((article) => {
     res.status(200).send({ article });
   });
 };
 
-const patchArticleVotesById = (req, res) => {
-  return adjustArticleVotesById(req, res).then((adjustedArticle) => {
+const patchArticleVotesById = (req, res, next) => {
+  return adjustArticleVotesById(req, res, next).then((adjustedArticle) => {
     res.status(200).send({ adjustedArticle });
   });
 };

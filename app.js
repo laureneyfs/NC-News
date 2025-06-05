@@ -14,6 +14,12 @@ const {
   deleteCommentbyId,
 } = require("./controllers/comments.controller");
 
+const {
+  handleCustomErrors,
+  handleServerErrors,
+  handlePgErrors,
+} = require("./controllers/errors.controller");
+
 app.use(express.json());
 
 app.get("/api", (req, res) => {
@@ -28,5 +34,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 app.patch("/api/articles/:article_id", patchArticleVotesById);
 app.delete("/api/comments/:comment_id", deleteCommentbyId);
+app.use(handleCustomErrors);
+app.use(handlePgErrors);
+app.use(handleServerErrors);
 
 module.exports = app;
