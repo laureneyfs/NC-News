@@ -32,9 +32,6 @@ const fetchArticles = ({ sort_by, order, topic }) => {
   if (order && !validOrder.includes(order?.toUpperCase())) {
     return Promise.reject({ status: 400, error: "bad request" });
   }
-  // if (!validOrderBy.includes(order?.toUpperCase())) {
-  //   return Promise.reject({ status: 400, error: "bad request" });
-  // }
 
   const orderBy = validOrderBy.includes(sort_by) ? sort_by : "created_at";
   const orderAscOrDesc = validOrder.includes(order?.toUpperCase())
@@ -58,7 +55,10 @@ const fetchArticles = ({ sort_by, order, topic }) => {
 
 const fetchArticleById = (articleId) => {
   return db
-    .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
+    .query(
+      `SELECT articles.*, ( SELECT COUNT(*)::INT FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles WHERE articles.article_id = $1;`,
+      [articleId]
+    )
     .then(({ rows }) => {
       if (!rows.length) {
         return Promise.reject({ status: 404, error: "not found" });
@@ -70,6 +70,9 @@ const fetchArticleById = (articleId) => {
 };
 
 const adjustArticleVotesById = (articleId, incVotes) => {
+  if (!incVotes) {
+    return Promise.reject({ status: 400, error: "bad request" });
+  }
   return db
     .query(
       `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,

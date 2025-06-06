@@ -3,15 +3,24 @@ const {
   fetchArticleById,
   adjustArticleVotesById,
 } = require("../models/articles.model");
+const { validateTopic } = require("../models/topics.model");
 
 const getArticles = (req, res, next) => {
   const { sort_by, order, topic } = req.query;
+  const promises = [fetchArticles({ sort_by, order, topic })];
 
-  fetchArticles({ sort_by, order, topic })
-    .then((articles) => {
+  if (topic) {
+    promises.push(validateTopic(topic));
+  }
+
+  Promise.all(promises)
+    .then((resolvedPromises) => {
+      const articles = resolvedPromises[0];
       res.status(200).send({ articles });
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const getArticleById = (req, res, next) => {

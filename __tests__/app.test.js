@@ -84,7 +84,7 @@ describe("GET /api/articles", () => {
         ).toEqual(createdAtArray);
       });
   });
-  test("400: responds with an error if given a sort_by query value that isn't present on our table", () => {
+  test("400: responds with an error if given a sort_by query value that isn't a column on our table", () => {
     return request(app)
       .get("/api/articles?sort_by=invalidquery")
       .expect(400)
@@ -114,6 +114,14 @@ describe("GET /api/articles", () => {
         expect(arrayCopy.sort()).toEqual(createdAtArray);
       });
   });
+  test("400: responds with an error if given an order query value that isn't 'asc' or 'desc'", () => {
+    return request(app)
+      .get("/api/articles?order=invalidquery")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
   test("200: Responds with articles filtered by topic when given a valid topic query", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
@@ -132,6 +140,15 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  test("400: responds with an error if given a topic query value that isn't present in the slugs column on our topic table", () => {
+    return request(app)
+      .get("/api/articles?topic=invalidtopic")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+
   test("200: topic, sort_by and order queries will all be accounted for when used together", () => {
     return request(app)
       .get("/api/articles?sort_by=article_id&order=asc&topic=mitch")
@@ -158,6 +175,14 @@ describe("GET /api/articles", () => {
         ).toEqual(createdAtArray);
       });
   });
+  // test("400: responds with an error if endpoint is queried with an invalid query", () => {
+  //   return request(app)
+  //     .get("/api/articles?invalidquery=yes")
+  //     .expect(400)
+  //     .then(({ body }) => {
+  //       expect(body.error).toBe("bad request");
+  //     });
+  // });
 });
 
 describe("GET /api/users", () => {
@@ -201,6 +226,15 @@ describe("GET /api/articles/:article_id", () => {
         expect(typeof created_at).toBe("string");
         expect(typeof votes).toBe("number");
         expect(typeof article_img_url).toBe("string");
+      });
+  });
+  test("200: GET /api/articles/:article_id has a comment_count field", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({ body }) => {
+        const { comment_count } = body.article;
+        expect(typeof comment_count).toBe("number");
       });
   });
   test("404: Responds with an error message if user_id doesn't exist in our users table", () => {
@@ -287,6 +321,16 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(typeof created_at).toBe("string");
       });
   });
+  test("400: returns error message if article_id is not a number", () => {
+    const data = { username: "icellusedkars", body: "test test" };
+    return request(app)
+      .post("/api/articles/notanum/comments")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
   test("404: returns error message if trying to POST to an invalid article_id", () => {
     const data = { username: "icellusedkars", body: "test test" };
     return request(app)
@@ -351,8 +395,18 @@ describe("PATCH /api/articles/:article_id", () => {
     expect(after + 10).toBe(before);
   });
 
-  test("400: Returns error message if query has a foreign key violation", () => {
+  test("400: Returns error message if posted data has a foreign key violation", () => {
     const data = { inc_votes: "notanum" };
+    request(app)
+      .patch("/api/articles/1")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("400: returns error message if posted data does not have a inc_votes key", () => {
+    const data = {};
     request(app)
       .patch("/api/articles/1")
       .send(data)
@@ -384,5 +438,8 @@ describe("DELETE /api/comments/:comment_id", () => {
       .then(({ body }) => {
         expect(body.error).toBe("comment not found");
       });
+  });
+  test("400: returns an error if comment_id is not a number", () => {
+    return request(app).delete("/api/comments/notanum").expect(400);
   });
 });
