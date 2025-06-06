@@ -35,7 +35,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   test("200: Responds with an object of the articles table from our database, sorted by created_at, descending", () => {
     return request(app)
       .get("/api/articles")
