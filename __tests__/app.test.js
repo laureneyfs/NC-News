@@ -35,7 +35,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe.only("GET /api/articles", () => {
   test("200: Responds with an object of the articles table from our database, sorted by created_at, descending", () => {
     return request(app)
       .get("/api/articles")
@@ -58,7 +58,7 @@ describe("GET /api/articles", () => {
         expect(arrayCopy.sort().reverse()).toEqual(createdAtArray);
       });
   });
-  test.only("200: Responds with an object of the articles table organised by the field specified in the sort_by query", () => {
+  test("200: Responds with an object of the articles table organised by the field specified in the sort_by query", () => {
     return request(app)
       .get("/api/articles?sort_by=article_id")
       .expect(200)
@@ -84,9 +84,17 @@ describe("GET /api/articles", () => {
         ).toEqual(createdAtArray);
       });
   });
-  test.only("200: when given sortby and order queries, data is sorted by the sortby query and ordered in the other specified in the order query", () => {
+  test("400: responds with an error if given a sort_by query value that isn't present on our table", () => {
     return request(app)
-      .get("/api/articles?sort_by=article_id&order=asc")
+      .get("/api/articles?sort_by=invalidquery")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("200: when given order query with no sort_by query, orders the table by created_at and orders the table appropriately", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
       .expect(200)
       .then(({ body }) => {
         const createdAtArray = [];
@@ -96,6 +104,46 @@ describe("GET /api/articles", () => {
           expect(typeof article.title).toBe("string");
           expect(typeof article.article_id).toBe("number");
           expect(typeof article.topic).toBe("string");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+          createdAtArray.push(article.created_at);
+        });
+        const arrayCopy = [...createdAtArray];
+        expect(arrayCopy.sort()).toEqual(createdAtArray);
+      });
+  });
+  test("200: Responds with articles filtered by topic when given a valid topic query", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).not.toBe(0);
+        body.articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(article.topic).toBe("mitch");
+          expect(typeof article.created_at).toBe("string");
+          expect(typeof article.votes).toBe("number");
+          expect(typeof article.article_img_url).toBe("string");
+          expect(article.hasOwnProperty("comment_count")).toBe(true);
+        });
+      });
+  });
+  test("200: topic, sort_by and order queries will all be accounted for when used together", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=asc&topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const createdAtArray = [];
+        expect(body.articles.length).not.toBe(0);
+        body.articles.forEach((article) => {
+          expect(typeof article.author).toBe("string");
+          expect(typeof article.title).toBe("string");
+          expect(typeof article.article_id).toBe("number");
+          expect(article.topic).toBe("mitch");
           expect(typeof article.created_at).toBe("string");
           expect(typeof article.votes).toBe("number");
           expect(typeof article.article_img_url).toBe("string");
@@ -209,6 +257,15 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(body.error).toBe("bad request");
       });
   });
+  test("200: responds with an empty array if article_id is valid but the article has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then((response) => {
+        const commentsArray = response.body.comments;
+        expect(commentsArray.length).toBe(0);
+      });
+  });
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
@@ -230,14 +287,14 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(typeof created_at).toBe("string");
       });
   });
-  test.skip("400: returns error message if trying to POST to an invalid article_id", () => {
+  test("404: returns error message if trying to POST to an invalid article_id", () => {
     const data = { username: "icellusedkars", body: "test test" };
     return request(app)
       .post("/api/articles/100/comments")
       .send(data)
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.error).toBe("bad request");
+        expect(body.error).toBe("not found");
       });
   });
   test("404: returns error message if query has a foreign key violation", () => {
@@ -262,16 +319,16 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 
-  test.skip("400: returns error message if fields provided have a typing mismatch", () => {
-    const data = { username: "icellusedkars", body: 3 };
-    return request(app)
-      .post("/api/articles/1/comments")
-      .send(data)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.error).toBe("bad request");
-      });
-  });
+  // test("400: returns error message if fields provided have a typing mismatch", () => {
+  //   const data = { username: "icellusedkars", body: 3 };
+  //   return request(app)
+  //     .post("/api/articles/1/comments")
+  //     .send(data)
+  //     .expect(400)
+  //     .then(({ body }) => {
+  //       expect(body.error).toBe("bad request");
+  //     });
+  // });
 });
 
 describe("PATCH /api/articles/:article_id", () => {

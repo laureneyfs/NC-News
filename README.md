@@ -21,10 +21,11 @@ PGDATABASE=nc_news_test
 3. 'npm run test-seed' to run tests (and confirm you are connected to the database in a test environment)
 4. 'npm run seed-dev' to seed your development database
 
-# queries.js
-
-queries.js contains some sample functions for querying different data, to try them, remove their invocation (eg: viewAllUsers() ) from the commented block at the bottom of the file
-
 # Entity Relationship Diagram
 
 ![ERD](./ERD.png)
+
+# Portfolio considerations
+
+- I wouldn't include PGDATABASE information within the readme typically, but as a portfolio piece I am choosing to so it can be tested
+- I chose to use older express methods for error handling to show understanding of them as I am aware that most express databases are built on express v4 or lower

@@ -5,21 +5,36 @@ const {
 } = require("../models/articles.model");
 
 const getArticles = (req, res, next) => {
-  return fetchArticles(req, res, next).then((articles) => {
-    res.status(200).send({ articles });
-  });
+  const { sort_by, order, topic } = req.query;
+
+  fetchArticles({ sort_by, order, topic })
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };
 
 const getArticleById = (req, res, next) => {
-  return fetchArticleById(req, res, next).then((article) => {
-    res.status(200).send({ article });
-  });
+  const { article_id } = req.params;
+  return fetchArticleById(article_id)
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const patchArticleVotesById = (req, res, next) => {
-  return adjustArticleVotesById(req, res, next).then((adjustedArticle) => {
-    res.status(200).send({ adjustedArticle });
-  });
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
+  return adjustArticleVotesById(article_id, inc_votes)
+    .then((adjustedArticle) => {
+      res.status(200).send({ adjustedArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports = { getArticles, getArticleById, patchArticleVotesById };

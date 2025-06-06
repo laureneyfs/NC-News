@@ -3,23 +3,47 @@ const {
   createComment,
   removeComment,
 } = require("../models/comments.model");
+const { fetchArticleById } = require("../models/articles.model");
 
 const getCommentsByArticleId = (req, res, next) => {
-  return fetchCommentsByArticleId(req, res, next).then((comments) => {
-    res.status(200).send({ comments });
-  });
+  const { article_id } = req.params;
+
+  const promises = [
+    fetchArticleById(article_id),
+    fetchCommentsByArticleId(article_id),
+  ];
+
+  Promise.all(promises)
+    .then((resolvedPromises) => {
+      const comments = resolvedPromises[1];
+      res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const postCommentByArticleId = (req, res, next) => {
-  return createComment(req, res, next).then((newComment) => {
-    res.status(201).send({ newComment });
-  });
+  const { article_id } = req.params;
+  const { username, body } = req.body;
+  return createComment(article_id, { username, body })
+    .then((newComment) => {
+      res.status(201).send({ newComment });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const deleteCommentbyId = (req, res, next) => {
-  return removeComment(req, res, next).then(() => {
-    res.status(204).send();
-  });
+  const { comment_id } = req.params;
+  return removeComment(comment_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports = {

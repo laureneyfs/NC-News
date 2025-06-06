@@ -18,7 +18,7 @@ const {
   handleCustomErrors,
   handleServerErrors,
   handlePgErrors,
-} = require("./controllers/errors.controller");
+} = require("./errors/index");
 
 app.use(express.json());
 
