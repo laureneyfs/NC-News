@@ -82,6 +82,11 @@
   },
   "POST /api/articles/:article_id/comments": {
     "description": "Posts comment to article_id and returns a newComment object",
+    "exampleRequest": {
+      "article_id": 1,
+      "body": "test test",
+      "username": "icellusedkars"
+    },
     "exampleResponse": {
       "newComment": {
         "comment_id": 19,
@@ -96,5 +101,41 @@
   "DELETE /api/comments/:comment_id": {
     "description": "Deletes the specified comment from the comments database",
     "exampleResponse": {}
+  },
+  "GET /api/comments/:comment_id": {
+    "description": "returns the requested comment",
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "article_id": 9,
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "votes": 16,
+        "author": "butter_bridge",
+        "created_at": "2020-04-06T12:17:00.000Z"
+      }
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "adjusts the requested comment's votes by the amount corresponding to the inc_votes key it is PATCHed with",
+    "exampleRequest": { "inc_votes": -5 },
+    "exampleResponse": {
+      "updatedComment": {
+        "comment_id": 1,
+        "article_id": 9,
+        "votes": 11,
+        "author": "butter_bridge",
+        "created_at": "2020-04-06T12:17:00.000Z"
+      }
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "returns the user that corresponds to the username provided",
+    "exampleResponse": {
+      "user": {
+        "username": "lurker",
+        "name": "do_nothing",
+        "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+      }
+    }
   }
 }

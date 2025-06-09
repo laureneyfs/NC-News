@@ -15,16 +15,6 @@ const fetchArticles = ({ sort_by, order, topic }) => {
 
   const validOrder = ["ASC", "DESC"];
 
-  // if (topic) {
-  //   db.query(`SELECT slug FROM topics WHERE slug = $1`, [topic]).then(
-  //     ({ rows }) => {
-  //       if (!rows.length) {
-  //         return Promise.reject({ status: 400, error: "bad request" });
-  //       }
-  //     }
-  //   );
-  // }
-
   if (sort_by && !validOrderBy.includes(sort_by)) {
     return Promise.reject({ status: 400, error: "bad request" });
   }

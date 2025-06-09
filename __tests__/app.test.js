@@ -1,4 +1,4 @@
-const endpointsJson = require("../endpoints.json");
+const endpointsJson = require("../db/data/endpoints.json");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const request = require("supertest");
@@ -175,14 +175,6 @@ describe("GET /api/articles", () => {
         ).toEqual(createdAtArray);
       });
   });
-  // test("400: responds with an error if endpoint is queried with an invalid query", () => {
-  //   return request(app)
-  //     .get("/api/articles?invalidquery=yes")
-  //     .expect(400)
-  //     .then(({ body }) => {
-  //       expect(body.error).toBe("bad request");
-  //     });
-  // });
 });
 
 describe("GET /api/users", () => {
@@ -376,7 +368,7 @@ describe("POST /api/articles/:article_id/comments", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  test("200: Returns updated object of the updated fields of the article requested", async () => {
+  test("200: Returns updated object with the votes field adjusted as requested", async () => {
     const data = { inc_votes: -10 };
     const before = await request(app)
       .get("/api/articles/1")
@@ -397,7 +389,7 @@ describe("PATCH /api/articles/:article_id", () => {
 
   test("400: Returns error message if posted data has a foreign key violation", () => {
     const data = { inc_votes: "notanum" };
-    request(app)
+    return request(app)
       .patch("/api/articles/1")
       .send(data)
       .expect(400)
@@ -407,7 +399,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
   test("400: returns error message if posted data does not have a inc_votes key", () => {
     const data = {};
-    request(app)
+    return request(app)
       .patch("/api/articles/1")
       .send(data)
       .expect(400)
@@ -417,7 +409,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
   test("404: Returns error message if article_id provided isn't on our table", () => {
     const data = { inc_votes: 3 };
-    request(app)
+    return request(app)
       .patch("/api/articles/100")
       .send(data)
       .expect(404)
@@ -441,5 +433,103 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
   test("400: returns an error if comment_id is not a number", () => {
     return request(app).delete("/api/comments/notanum").expect(400);
+  });
+});
+
+describe("GET /api/users/:username", () => {
+  test("200: Returns user object of the user with the requested username", () => {
+    return request(app)
+      .get("/api/users/icellusedkars")
+      .expect(200)
+      .then(({ body }) => {
+        const { username, name, avatar_url } = body.user;
+        expect(username).toBe("icellusedkars");
+        expect(typeof name).toBe("string");
+        expect(typeof avatar_url).toBe("string");
+      });
+  });
+  test("404: Returns an error if username is not present on our users table", () => {
+    return request(app)
+      .get("/api/users/invalidusername")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("not found");
+      });
+  });
+});
+
+describe("GET /api/comments/:comment_id", () => {
+  test("200: returns requested comment", () => {
+    return request(app)
+      .get("/api/comments/1")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment.comment_id).toBe(1);
+      });
+  });
+  test("404: returns error if comment_id is not present on our comments table", () => {
+    return request(app)
+      .get("/api/comments/100")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("not found");
+      });
+  });
+  test("400: returns error if invoked with a comment_id that is not a number", () => {
+    return request(app)
+      .get("/api/comments/notanum")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: Returns comment with votes field updated by the amount requested", () => {
+    const data = { inc_votes: -5 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(data)
+      .expect(200)
+      .then(({ body }) => {
+        const { votes, comment_id, article_id, author, created_at } =
+          body.updatedComment;
+        expect(votes).toBe(11);
+        expect(comment_id).toBe(1);
+        expect(typeof article_id).toBe("number");
+        expect(typeof author).toBe("string");
+        expect(typeof created_at).toBe("string");
+      });
+  });
+  test("400: returns a bad request if PATCH request's body does not include inc_votes", () => {
+    const data = { test: "yes" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("404: returns an error if attempting to patch a comment_id that does not exist on our comments table", () => {
+    const data = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/comments/100")
+      .send(data)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("not found");
+      });
+  });
+  test("400: returns an error if attempting to patch a comment_id that is not a number", () => {
+    const data = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/comments/notanum")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
   });
 });
