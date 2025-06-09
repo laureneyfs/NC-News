@@ -10,6 +10,9 @@ const fetchCommentsByArticleId = (articleId) => {
 };
 
 const createComment = (articleId, { username, body }) => {
+  if (!username || !body) {
+    return Promise.reject({ status: 400, error: "bad request" });
+  }
   return db
     .query(
       `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`,
@@ -17,9 +20,7 @@ const createComment = (articleId, { username, body }) => {
     )
     .then(({ rows }) => {
       const addedComment = rows[0];
-      if (!addedComment.body) {
-        return Promise.reject({ status: 400, error: "bad request" });
-      } else return addedComment;
+      return addedComment;
     });
 };
 const fetchCommentById = (commentId) => {
@@ -49,7 +50,7 @@ const removeComment = (commentId) => {
 
 const adjustCommentVotesById = (commentId, incVotes) => {
   if (!incVotes) {
-    return Promise.reject({ status: 400, error: "bad request" });
+    incVotes = 0;
   }
   return db
     .query(

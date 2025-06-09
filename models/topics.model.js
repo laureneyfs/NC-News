@@ -12,7 +12,7 @@ const validateTopic = (slug) => {
     .query(`SELECT * FROM topics WHERE slug = $1`, [slug])
     .then(({ rows }) => {
       if (!rows.length) {
-        return Promise.reject({ status: 400, error: "bad request" });
+        return Promise.reject({ status: 404, error: "not found" });
       }
     });
 };

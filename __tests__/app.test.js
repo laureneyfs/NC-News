@@ -140,12 +140,12 @@ describe("GET /api/articles", () => {
         });
       });
   });
-  test("400: responds with an error if given a topic query value that isn't present in the slugs column on our topic table", () => {
+  test("404: responds with an error if given a topic query value that isn't present in the slugs column on our topic table", () => {
     return request(app)
       .get("/api/articles?topic=invalidtopic")
-      .expect(400)
+      .expect(404)
       .then(({ body }) => {
-        expect(body.error).toBe("bad request");
+        expect(body.error).toBe("not found");
       });
   });
 
@@ -427,16 +427,11 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.error).toBe("bad request");
       });
   });
-  test("400: returns error message if posted data does not have a inc_votes key", () => {
-    const data = {};
-    return request(app)
-      .patch("/api/articles/1")
-      .send(data)
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.error).toBe("bad request");
-      });
+  test("200: ignores irrelevant keys, and returns 200 with an unedited object when inc_votes is missing or 0 ", () => {
+    const data = { test: "not an incvotes key" };
+    return request(app).patch("/api/articles/1").send(data).expect(200);
   });
+
   test("404: Returns error message if article_id provided isn't on our table", () => {
     const data = { inc_votes: 3 };
     return request(app)
@@ -532,14 +527,20 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(typeof created_at).toBe("string");
       });
   });
-  test("400: returns a bad request if PATCH request's body does not include inc_votes", () => {
-    const data = { test: "yes" };
+  test("200: returns comment object with an unedited votecount if inc_votes key is missing and queried with irrelevant data", () => {
+    const data = { test: "not an incvotes key" };
     return request(app)
       .patch("/api/comments/1")
       .send(data)
-      .expect(400)
+      .expect(200)
       .then(({ body }) => {
-        expect(body.error).toBe("bad request");
+        const { votes, comment_id, article_id, author, created_at } =
+          body.updatedComment;
+        expect(votes).toBe(16);
+        expect(comment_id).toBe(1);
+        expect(typeof article_id).toBe("number");
+        expect(typeof author).toBe("string");
+        expect(typeof created_at).toBe("string");
       });
   });
   test("404: returns an error if attempting to patch a comment_id that does not exist on our comments table", () => {

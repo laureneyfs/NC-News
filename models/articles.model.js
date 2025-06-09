@@ -71,8 +71,9 @@ const fetchArticleById = (articleId) => {
 
 const adjustArticleVotesById = (articleId, incVotes) => {
   if (!incVotes) {
-    return Promise.reject({ status: 400, error: "bad request" });
+    incVotes = 0;
   }
+
   return db
     .query(
       `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
