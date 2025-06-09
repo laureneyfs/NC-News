@@ -1,31 +1,65 @@
-# NC News Seeding
+# 📰 NC News - Seeding & API Setup
 
-# Setting up development Environment:
+## 📄 Summary
 
-- in the root directory of this repo, create a file named .env.development
-- within this file, add
+This repo is a node-powered, MVC-style REST API that serves as the backend for a reddit-like social news application. It will create the databases and seed starter data for the core functionality that the API provides (see endpoints.json or GET /api)
 
-PGDATABASE=nc_news
+## ⚙️ Installation/Development
 
-# Setting up test Environment
+1. **Clone this repo**
 
-- in the root directory of this repo, create a file named .env.test
-- within this file, add
+2. **Install dependencies**
 
-PGDATABASE=nc_news_test
+> npm install
 
-# Setting up and seeding the database after defining our environments
+3. **Within the root directory of your cloned repository, create the following files**
 
-1. make sure you have all dependencies installed ('npm install' in terminal)
-2. 'npm run setup-dbs' to set up the dev and test environment databases
-3. 'npm run test-seed' to run tests (and confirm you are connected to the database in a test environment)
-4. 'npm run seed-dev' to seed your development database
+development environment
 
-# Entity Relationship Diagram
+> .env.development
 
-![ERD](./ERD.png)
+test environment
 
-# Portfolio considerations
+> .env.test
 
-- I wouldn't include PGDATABASE information within the readme typically, but as a portfolio piece I am choosing to so it can be tested
-- I chose to use older express methods for error handling to show understanding of them as I am aware that most express databases are built on express v4 or lower
+within those files, add the following database variables
+
+.env.development
+
+> PGDATABASE=nc_news
+
+.env.test
+
+> PGDATABASE=nc_news_test
+
+4. **Database setup**
+
+> npm run setup-dbs
+
+5. **Seed local server**
+
+> npm run seed-dev
+
+6. **Start local server**
+
+> npm start
+
+7. **Run tests**
+
+> npm test
+
+## Live Demo & API Spec
+
+Access online and view the available endpoints at https://nc-news-3uk2.onrender.com/api
+
+(Note: the hosting service puts the website to sleep if it hasn't been accessed within the last 15 minutes - this is not a quirk of the repo itself)
+
+## 🧩 Entity Relationship Diagram
+
+![ERD](./images/ERD.png)
+
+## 🎓 Portfolio considerations
+
+- I wouldn't include PGDATABASE information within the readme typically, but as a portfolio piece I am choosing to do so for showcasing purposes
+
+- I chose to use older express methods for error handling to show understanding of them as I am aware that most express databases aren't built on express v5
