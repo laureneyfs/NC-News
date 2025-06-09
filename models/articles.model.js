@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 const format = require("pg-format");
 
-const fetchArticles = ({ sort_by, order, topic }) => {
+const fetchArticles = ({ sort_by, order, topic, limit, p }) => {
   const validOrderBy = [
     "article_id",
     "title",
@@ -39,6 +39,16 @@ const fetchArticles = ({ sort_by, order, topic }) => {
     orderBy,
     orderAscOrDesc
   );
+
+  if (limit) {
+    queryStr += format(` LIMIT %s`, [limit]);
+  } else {
+    limit = 10;
+    queryStr += ` LIMIT 10`;
+  }
+  if (p) {
+    queryStr += format(` OFFSET %s`, (p - 1) * limit);
+  }
 
   return db.query(queryStr).then(({ rows }) => rows);
 };

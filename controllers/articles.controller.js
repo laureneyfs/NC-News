@@ -8,8 +8,8 @@ const {
 const { validateTopic } = require("../models/topics.model");
 
 const getArticles = (req, res, next) => {
-  const { sort_by, order, topic } = req.query;
-  const promises = [fetchArticles({ sort_by, order, topic })];
+  const { sort_by, order, topic, limit, p } = req.query;
+  const promises = [fetchArticles({ sort_by, order, topic, limit, p })];
 
   if (topic) {
     promises.push(validateTopic(topic));

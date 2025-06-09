@@ -175,6 +175,47 @@ describe("GET /api/articles", () => {
         ).toEqual(createdAtArray);
       });
   });
+  test("200: limit query limits the length of results correctly", () => {
+    return request(app)
+      .get("/api/articles?limit=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(2);
+      });
+  });
+  test("200: p query offsets result response by the correct number (with respect to limits, defaulting to 10", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id&order=asc&p=2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles[0].article_id).toBe(11);
+      });
+  });
+  test("200: when limit and p are queried together, p correctly adjusts the offset value", () => {
+    return request(app)
+      .get("/api/articles?limit=3&p=2&sort_by=article_id&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles[0].article_id).toBe(4);
+        expect(body.articles.length).toBe(3);
+      });
+  });
+  test("400: returns an error if limit query value is not a number", () => {
+    return request(app)
+      .get("/api/articles?limit=notanum")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("400: returns an error if p query value is not a number above 0", () => {
+    return request(app)
+      .get("/api/articles?p=notanum")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
 });
 
 describe("GET /api/users", () => {
@@ -644,7 +685,7 @@ describe("POST /api/topics", () => {
   });
 });
 
-describe.only("DELETE /api/articles/:article_id", () => {
+describe("DELETE /api/articles/:article_id", () => {
   test("204: returns statuscode 204 and no content and deletes the specified article", () => {
     return request(app).delete("/api/articles/1").expect(204);
   });
