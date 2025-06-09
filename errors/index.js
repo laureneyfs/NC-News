@@ -8,6 +8,10 @@ const handlePgErrors = (err, req, res, next) => {
     res.status(400).send({ error: "bad request" });
   } else if (err.code === "23503") {
     res.status(404).send({ error: "not found" });
+  } else if (err.code === "23502") {
+    res.status(400).send({ error: "bad request" });
+  } else if (err.code === "23505") {
+    res.status(409).send({ error: "resource already exists" });
   } else next(err);
 };
 const handleServerErrors = (err, req, res, next) => {

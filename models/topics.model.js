@@ -17,4 +17,16 @@ const validateTopic = (slug) => {
     });
 };
 
-module.exports = { fetchTopics, validateTopic };
+const createTopic = ({ slug, description }) => {
+  return db
+    .query(
+      `INSERT INTO topics (slug, description) VALUES ($1, $2) RETURNING *`,
+      [slug, description]
+    )
+    .then(({ rows }) => {
+      const createdTopic = rows[0];
+      return createdTopic;
+    });
+};
+
+module.exports = { fetchTopics, validateTopic, createTopic };

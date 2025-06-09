@@ -523,7 +523,7 @@ describe("PATCH /api/comments/:comment_id", () => {
   });
 });
 
-describe.only("POST /api/articles", () => {
+describe("POST /api/articles", () => {
   test("201: returns the created comment if all fields provided are valid within request", () => {
     const data = {
       author: "icellusedkars",
@@ -605,6 +605,42 @@ describe.only("POST /api/articles", () => {
         expect(body.createdArticle.article_img_url).toBe(
           "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=128"
         );
+      });
+  });
+});
+
+describe("POST /api/topics", () => {
+  test("201: POSTs new topic to topic table when provided with valid data", () => {
+    const data = { slug: "new topic", description: "example description" };
+    return request(app)
+      .post("/api/topics")
+      .send(data)
+      .expect(201)
+      .then(({ body }) => {
+        console.log(body);
+        const { slug, description } = body.createdTopic;
+        expect(slug).toBe("new topic");
+        expect(description).toBe("example description");
+      });
+  });
+  test("400: returns error if missing required fields", () => {
+    const data = { description: "example description" };
+    return request(app)
+      .post("/api/topics")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("409: returns error when slug already exists", () => {
+    const data = { slug: "mitch", description: "example description" };
+    return request(app)
+      .post("/api/topics")
+      .send(data)
+      .expect(409)
+      .then(({ body }) => {
+        expect(body.error).toBe("resource already exists");
       });
   });
 });

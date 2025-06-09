@@ -158,5 +158,19 @@
         "article_img_url": "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=128"
       }
     }
+  },
+  "POST /api/topics": {
+    "description": "creates a topic and returns the created topic object",
+    "exampleRequest": {
+      "slug": "new topic",
+      "description": "example description"
+    },
+    "exampleResponse": {
+      "createdTopic": {
+        "slug": "new topic",
+        "description": "example description",
+        "img_url": null
+      }
+    }
   }
 }
