@@ -2,9 +2,14 @@
 
 ## 📄 Summary
 
-This repo is a node-powered, MVC-style REST API that serves as the backend for a reddit-like social news application. It will create the databases and seed starter data for the core functionality that the API provides (see endpoints.json or GET /api)
+This repo is a node-powered, MVC-style REST API that serves as the backend for a reddit-like social news application. It will create the databases and seed starter data for the core functionality that the API provides (see endpoints.json or GET /api).
 
 ## ⚙️ Installation/Development
+
+### 📌 Requirements
+
+- Node.js version ≥ 18.7.0
+- PostgreSQL version ≥ 12 (v14+ recommended)
 
 1. **Clone this repo**
 
