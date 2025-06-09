@@ -137,5 +137,26 @@
         "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
       }
     }
+  },
+  "POST /api/articles": {
+    "description": "creates an article and returns the created article object",
+    "exampleRequest": {
+      "author": "icellusedkars",
+      "title": "this is a test article",
+      "body": "this is an example body",
+      "topic": "mitch"
+    },
+    "exampleResponse": {
+      "createdArticle": {
+        "article_id": 14,
+        "title": "this is a test article",
+        "topic": "mitch",
+        "author": "icellusedkars",
+        "body": "this is an example body",
+        "created_at": "2025-06-09T12:27:07.774Z",
+        "votes": 0,
+        "article_img_url": "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=128"
+      }
+    }
   }
 }

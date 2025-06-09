@@ -354,17 +354,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.error).toBe("bad request");
       });
   });
-
-  // test("400: returns error message if fields provided have a typing mismatch", () => {
-  //   const data = { username: "icellusedkars", body: 3 };
-  //   return request(app)
-  //     .post("/api/articles/1/comments")
-  //     .send(data)
-  //     .expect(400)
-  //     .then(({ body }) => {
-  //       expect(body.error).toBe("bad request");
-  //     });
-  // });
 });
 
 describe("PATCH /api/articles/:article_id", () => {
@@ -530,6 +519,92 @@ describe("PATCH /api/comments/:comment_id", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body.error).toBe("bad request");
+      });
+  });
+});
+
+describe.only("POST /api/articles", () => {
+  test("201: returns the created comment if all fields provided are valid within request", () => {
+    const data = {
+      author: "icellusedkars",
+      title: "this is a test article",
+      body: "this is an example body",
+      topic: "mitch",
+      article_img_url: "https://fakeimglink.com/",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(data)
+      .expect(201)
+      .then((response) => {
+        const {
+          author,
+          title,
+          body,
+          topic,
+          article_img_url,
+          votes,
+          article_id,
+          created_at,
+        } = response.body.createdArticle;
+        expect(author).toBe("icellusedkars");
+        expect(typeof article_id).toBe("number");
+        expect(title).toBe("this is a test article");
+        expect(body).toBe("this is an example body");
+        expect(topic).toBe("mitch");
+        expect(article_img_url).toBe("https://fakeimglink.com/");
+        expect(votes).toBe(0);
+        expect(typeof created_at).toBe("string");
+      });
+  });
+  test("400: returns error if missing required fields", () => {
+    const data = {
+      title: "this is a test article",
+      body: "this is an example body",
+      topic: "mitch",
+      article_img_url: "https://fakeimglink.com/",
+    };
+
+    return request(app)
+      .post("/api/articles")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("400: returns error if there is a foreign key violation", () => {
+    const data = {
+      username: "notarealusername",
+      title: "this is a test article",
+      body: "this is an example body",
+      topic: "mitch",
+      article_img_url: "https://fakeimglink.com/",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(data)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
+      });
+  });
+  test("201: returns request with a default avatar_img_url if none is provided", () => {
+    const data = {
+      author: "icellusedkars",
+      title: "this is a test article",
+      body: "this is an example body",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(data)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.createdArticle.article_img_url).toBe(
+          "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=128"
+        );
       });
   });
 });

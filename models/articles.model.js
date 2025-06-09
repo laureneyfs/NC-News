@@ -78,4 +78,27 @@ const adjustArticleVotesById = (articleId, incVotes) => {
     });
 };
 
-module.exports = { fetchArticles, fetchArticleById, adjustArticleVotesById };
+const createArticle = ({ author, title, body, topic, article_img_url }) => {
+  if (!article_img_url) {
+    article_img_url =
+      "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=128";
+  }
+  return db
+    .query(
+      `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [author, title, body, topic, article_img_url]
+    )
+    .then(({ rows }) => {
+      const createdArticle = rows[0];
+      if (!createdArticle.body || !createdArticle.author) {
+        return Promise.reject({ status: 400, error: "bad request" });
+      } else return createdArticle;
+    });
+};
+
+module.exports = {
+  fetchArticles,
+  fetchArticleById,
+  adjustArticleVotesById,
+  createArticle,
+};

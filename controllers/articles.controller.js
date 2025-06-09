@@ -2,6 +2,7 @@ const {
   fetchArticles,
   fetchArticleById,
   adjustArticleVotesById,
+  createArticle,
 } = require("../models/articles.model");
 const { validateTopic } = require("../models/topics.model");
 
@@ -46,4 +47,21 @@ const patchArticleVotesById = (req, res, next) => {
     });
 };
 
-module.exports = { getArticles, getArticleById, patchArticleVotesById };
+const postArticle = (req, res, next) => {
+  const { author, title, body, topic, article_img_url } = req.body;
+
+  return createArticle({ author, title, body, topic, article_img_url })
+    .then((createdArticle) => {
+      res.status(201).send({ createdArticle });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+module.exports = {
+  getArticles,
+  getArticleById,
+  patchArticleVotesById,
+  postArticle,
+};
