@@ -96,9 +96,23 @@ const createArticle = ({ author, title, body, topic, article_img_url }) => {
     });
 };
 
+const removeArticleById = (articleId) => {
+  return db
+    .query(`DELETE FROM articles WHERE article_id = $1 RETURNING *`, [
+      articleId,
+    ])
+    .then(({ rows }) => {
+      const deletedArticle = rows[0];
+      if (!deletedArticle) {
+        return Promise.reject({ status: 404, error: "article not found" });
+      } else return;
+    });
+};
+
 module.exports = {
   fetchArticles,
   fetchArticleById,
   adjustArticleVotesById,
   createArticle,
+  removeArticleById,
 };

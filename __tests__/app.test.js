@@ -617,7 +617,6 @@ describe("POST /api/topics", () => {
       .send(data)
       .expect(201)
       .then(({ body }) => {
-        console.log(body);
         const { slug, description } = body.createdTopic;
         expect(slug).toBe("new topic");
         expect(description).toBe("example description");
@@ -641,6 +640,28 @@ describe("POST /api/topics", () => {
       .expect(409)
       .then(({ body }) => {
         expect(body.error).toBe("resource already exists");
+      });
+  });
+});
+
+describe.only("DELETE /api/articles/:article_id", () => {
+  test("204: returns statuscode 204 and no content and deletes the specified article", () => {
+    return request(app).delete("/api/articles/1").expect(204);
+  });
+  test("404: returns statuscode 404 if trying to delete article that doesn't exist", () => {
+    return request(app)
+      .delete("/api/articles/1000")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.error).toBe("article not found");
+      });
+  });
+  test("400: returns statuscode 400 if article_id provided is not a number", () => {
+    return request(app)
+      .delete("/api/articles/notanum")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.error).toBe("bad request");
       });
   });
 });

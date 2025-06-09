@@ -53,7 +53,7 @@ const seed = ({
     .then(() => {
       return db
         .query(
-          `CREATE TABLE comments(comment_id SERIAL PRIMARY KEY, article_id INT, FOREIGN KEY(article_id) REFERENCES articles(article_id), body TEXT, votes INT DEFAULT 0, author VARCHAR(20), FOREIGN KEY (author) REFERENCES users(username), created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);`
+          `CREATE TABLE comments(comment_id SERIAL PRIMARY KEY, article_id INT, FOREIGN KEY(article_id) REFERENCES articles(article_id) ON DELETE CASCADE, body TEXT, votes INT DEFAULT 0, author VARCHAR(20), FOREIGN KEY (author) REFERENCES users(username), created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);`
         )
         .then(() => {
           return db.query(
@@ -67,9 +67,9 @@ const seed = ({
               emoji_id INT, 
               FOREIGN KEY (emoji_id) REFERENCES emojis(emoji_id), 
               username VARCHAR(16), 
-              FOREIGN KEY (username) REFERENCES users(username), 
+              FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE, 
               article_id INT, 
-              FOREIGN KEY (article_id) REFERENCES articles(article_id),
+              FOREIGN KEY (article_id) REFERENCES articles(article_id) ON DELETE CASCADE,
               UNIQUE (emoji_id, username, article_id)
             );`
           );
@@ -91,9 +91,9 @@ const seed = ({
             `CREATE TABLE user_article_votes(
               user_article_votes_id SERIAL PRIMARY KEY, 
               username VARCHAR(16), 
-              FOREIGN KEY (username) REFERENCES users(username), 
+              FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE, 
               article_id INT, 
-              FOREIGN KEY (article_id) REFERENCES articles(article_id), 
+              FOREIGN KEY (article_id) REFERENCES articles(article_id) ON DELETE CASCADE, 
               vote_count INT NOT NULL,
               UNIQUE (username, article_id)
             );`
