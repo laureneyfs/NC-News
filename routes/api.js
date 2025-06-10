@@ -6,7 +6,8 @@ const articlesRouter = require("./articles");
 const usersRouter = require("./users");
 const commentsRouter = require("./comments");
 
-router.get("/", getEndPoints);
+router.use("/", express.static("public"));
+router.get("/json", getEndPoints);
 
 router.use("/topics", topicsRouter);
 router.use("/articles", articlesRouter);

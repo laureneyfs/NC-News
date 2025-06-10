@@ -7,6 +7,48 @@ h1 {
   font-size: 2em;
 }
 
-/* #nav {
-  background-color: rgb(206, 206, 206);
-} */
+#nav {
+  border: 2px solid rgb(0, 0, 0);
+  width: 250px;
+  height: 275px;
+  padding: 0.5rem;
+  margin: 2rem;
+  background-color: rgb(214, 214, 214);
+}
+
+#navtitle {
+  text-align: center;
+}
+
+#get-api {
+  background-color: rgb(214, 214, 214);
+  height: 100px;
+}
+
+#post-articles {
+  background-color: rgb(214, 214, 214);
+}
+
+#get-users {
+  background-color: rgb(214, 214, 214);
+}
+
+#get-comments-by-article {
+  background-color: rgb(214, 214, 214);
+}
+
+#post-comment {
+  background-color: rgb(214, 214, 214);
+}
+
+#get-comment-by-id {
+  background-color: rgb(214, 214, 214);
+}
+
+#get-user-by-username {
+  background-color: rgb(214, 214, 214);
+}
+
+#delete-article {
+  background-color: rgb(214, 214, 214);
+}

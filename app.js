@@ -8,7 +8,6 @@ const {
 } = require("./errors");
 
 app.use(express.json());
-
 app.use("/api", apiRouter);
 
 app.use(handleCustomErrors);
