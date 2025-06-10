@@ -8,9 +8,7 @@ const {
 } = require("./errors");
 
 app.use(express.json());
-app.set("views engine", "ejs");
-app.set("views", "public");
-app.use(express.static("views"));
+
 app.use("/api", apiRouter);
 
 app.use(handleCustomErrors);
