@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NC News API</title>
+  </head>
+  <body>
+    <h1>Endpoints Documentation</h1>
+    <section id="nav">
+      <nav id="navbar">
+        <header id="title"><strong>Navigation</strong></header>
+        <ul>
+          <li><a class="nav-link" href="#get-api">GET /api</a></li>
+          <li>
+            <a class="nav-link" href="#get-articles">GET /api/articles</a>
+          </li>
+          <li>
+            <a class="nav-link" href="#POST-articles">POST /api/articles</a>
+          </li>
+          <li>
+            <a class="nav-link" href="#get-topics">GET /api/articles</a>
+          </li>
+          <li>
+            <a class="nav-link" href="#get-comments-by-article"
+              >GET /api/article/:id/comments</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="#patch-article-by-id"
+              >PATCH /api/articles/:id</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="#post-comment">POST /api/comments</a>
+          </li>
+          <li>
+            <a class="nav-link" href="#delete-comment"
+              >DELETE /api/comments/:id</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="#get-comment-by-id"
+              >GET /api/comments/:id</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="#patch-comment"
+              >PATCH /api/comments/:id</a
+            >
+          </li>
+          <li>
+            <a class="nav-link" href="#get-user-by-username"
+              >GET /api/users/:username</a
+            >
+          </li>
+          <li><a class="nav-link" href="#post-topic">POST /api/topics</a></li>
+          <li>
+            <a class="nav-link" href="#delete-article"
+              >DELETE /api/articles/:id</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </section>
+
+    <section id="get-api">
+      <h2>GET <code>/api</code></h2>
+      <p>Displays this documentation page.</p>
+    </section>
+
+    <section id="get-articles">
+      <h2>GET <code>/api/articles</code></h2>
+      <p>Returns a list of articles from the server.</p>
+
+      <h3>Query Parameters</h3>
+      <ul>
+        <li>
+          <strong>sort_by</strong>: Sorts the returned articles by the given
+          value.<br />
+          <strong>Default:</strong> <code>created_at</code><br />
+          <strong>Valid Values:</strong> <code>article_id</code>,
+          <code>title</code>, <code>topic</code>, <code>author</code>,
+          <code>created_at</code>, <code>votes</code>,
+          <code>comment_count</code>
+        </li>
+        <li>
+          <strong>order</strong>: Determines sort order.<br />
+          <strong>Default:</strong> <code>desc</code><br />
+          <strong>Valid Values:</strong> <code>asc</code>, <code>desc</code>
+        </li>
+        <li>
+          <strong>topic</strong>: Filters results by topic.<br />
+          <strong>Valid Values:</strong> Any topic from the topics list
+        </li>
+        <li>
+          <strong>limit</strong>: Number of articles per page.<br />
+          <strong>Default:</strong> <code>10</code><br />
+          <strong>Valid Values:</strong> Any positive number
+        </li>
+        <li>
+          <strong>p</strong>: Page number.<br />
+          <strong>Default:</strong> <code>1</code><br />
+          <strong>Valid Values:</strong> Positive integers within available
+          pages
+        </li>
+      </ul>
+
+      <h3>Example Request</h3>
+      <pre><code>GET /api/articles?topic=cats&sort_by=votes&order=asc&limit=5&p=2</code></pre>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "articles": [
+    {
+      "article_id": 1,
+      "title": "Cats Rule the World",
+      "author": "jessjelly",
+      "topic": "cats",
+      "created_at": "2020-06-01T00:00:00.000Z",
+      "votes": 100,
+      "comment_count": 10
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <section id="post-articles">
+      <h2>POST <code>/api/articles</code></h2>
+      <p>Posts an article to the server and returns the new post</p>
+      <h3>POST body parameters</h3>
+      <ul>
+        <li>
+          <strong>author:</strong> the username of the poster. <br />
+          <strong
+            >Required Field. Must correspond to a user on our server</strong
+          >
+        </li>
+        <li>
+          <strong>title:</strong> the desired title of the post<br />
+          <strong>Required Field</strong>
+        </li>
+        <li>
+          <strong>body:</strong> the body of text of the posted article<br />
+          <strong>Required Field</strong>
+        </li>
+        <li>
+          <strong>topic:</strong> the topic of the article<br />
+          <strong
+            >Required Field. Must correspond to a topic on our server</strong
+          >
+        </li>
+        <li>
+          <strong>article_img_url:</strong> an image associated with the article
+        </li>
+        <strong
+          >Optional field. Default image provided if none specified.</strong
+        >
+      </ul>
+      <h3>Example Request</h3>
+      <pre><code>{
+      "author": "icellusedkars",
+      "title": "this is a test article",
+      "body": "this is an example body",
+      "topic": "mitch"
+    }</code></pre>
+      <h3>Example Response</h3>
+      <pre><code>{
+    "createdArticle" {
+        "article_id": 14,
+        "title": "this is a test article",
+        "topic": "mitch",
+        "author": "icellusedkars",
+        "body": "this is an example body",
+        "created_at": "2025-06-09T12:27:07.774Z",
+        "votes": 0,
+        "article_img_url": "https://i.natgeofe.com/n/548467d8-c5f1-4551-9f58-6817a8d2c45e/NationalGeographic_2572187_16x9.jpg?w=128"
+        }
+    }
+    </code></pre>
+    </section>
+    <section id="get-topics">
+      <h2>GET <code>/api/topics</code></h2>
+      <p>Serves an array of all topics.</p>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "topics": [
+    {
+      "slug": "football",
+      "description": "Footie!"
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <section id="get-users">
+      <h2>GET <code>/api/users</code></h2>
+      <p>Serves an array of all users.</p>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "users": [
+    {
+      "username": "lurker",
+      "name": "do_nothing",
+      "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <section id="get-article-by-id">
+      <h2>GET <code>/api/articles/:article_id</code></h2>
+      <p>Serves the article corresponding to the id provided.</p>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "articles": [
+    {
+      "title": "Seafood substitutions are increasing",
+      "topic": "cooking",
+      "author": "weegembump",
+      "created_at": "2018-05-30T15:59:13.341Z",
+      "votes": 0,
+      "comment_count": 6
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <section id="get-comments-by-article">
+      <h2>GET <code>/api/articles/:article_id/comments</code></h2>
+      <p>Serves an array of all comments for a given article.</p>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "comments": [
+    {
+      "comment_id": 18,
+      "article_id": 1,
+      "body": "This morning, I showered for nine minutes",
+      "votes": 16,
+      "author": "butter_bridge",
+      "created_at": "2020-07-21T00:20:00.000Z"
+    }
+  ]
+}</code></pre>
+    </section>
+
+    <section id="patch-article-by-id">
+      <h2>PATCH <code>/api/articles/:article_id</code></h2>
+      <p>Updates votes on the specified article.</p>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "adjustedArticle": {
+    "title": "Seafood substitutions are increasing",
+    "topic": "cooking",
+    "author": "weegembump",
+    "created_at": "2018-05-30T15:59:13.341Z",
+    "votes": 0,
+    "comment_count": 6
+  }
+}</code></pre>
+    </section>
+
+    <section id="post-comment">
+      <h2>POST <code>/api/articles/:article_id/comments</code></h2>
+      <p>Posts a comment to the specified article and returns it.</p>
+
+      <h3>Example Request</h3>
+      <pre><code>{
+  "article_id": 1,
+  "body": "test test",
+  "username": "icellusedkars"
+}</code></pre>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "newComment": {
+    "comment_id": 19,
+    "article_id": 1,
+    "body": "test test",
+    "votes": 0,
+    "author": "icellusedkars",
+    "created_at": "2025-06-04T15:51:36.614Z"
+  }
+}</code></pre>
+    </section>
+
+    <section id="delete-comment">
+      <h2>DELETE <code>/api/comments/:comment_id</code></h2>
+      <p>Deletes the specified comment. Returns statuscode 204 and no data</p>
+    </section>
+
+    <section id="get-comment-by-id">
+      <h2>GET <code>/api/comments/:comment_id</code></h2>
+      <p>Returns a comment by its ID.</p>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "comment": {
+    "comment_id": 1,
+    "article_id": 9,
+    "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+    "votes": 16,
+    "author": "butter_bridge",
+    "created_at": "2020-04-06T12:17:00.000Z"
+  }
+}</code></pre>
+    </section>
+
+    <section id="patch-comment">
+      <h2>PATCH <code>/api/comments/:comment_id</code></h2>
+      <p>Adjusts votes on the comment using the <code>inc_votes</code> key.</p>
+
+      <h3>Example Request</h3>
+      <pre><code>{ "inc_votes": -5 }</code></pre>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "updatedComment": {
+    "comment_id": 1,
+    "article_id": 9,
+    "votes": 11,
+    "author": "butter_bridge",
+    "created_at": "2020-04-06T12:17:00.000Z"
+  }
+}</code></pre>
+    </section>
+
+    <section id="get-user-by-username">
+      <h2>GET <code>/api/users/:username</code></h2>
+      <p>Returns the user that corresponds to the given username.</p>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "user": {
+    "username": "lurker",
+    "name": "do_nothing",
+    "avatar_url": "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+  }
+}</code></pre>
+    </section>
+
+    <section id="post-topic">
+      <h2>POST <code>/api/topics</code></h2>
+      <p>Creates a topic and returns the new topic.</p>
+
+      <h3>Example Request</h3>
+      <pre><code>{
+  "slug": "new topic",
+  "description": "example description"
+}</code></pre>
+
+      <h3>Example Response</h3>
+      <pre><code>{
+  "createdTopic": {
+    "slug": "new topic",
+    "description": "example description",
+    "img_url": null
+  }
+}</code></pre>
+    </section>
+
+    <section id="delete-article">
+      <h2>DELETE <code>/api/articles/:article_id</code></h2>
+      <p>
+        Deletes the article with the specified ID. returns statuscode 204 and no
+        data.
+      </p>
+    </section>
+  </body>
+</html>
