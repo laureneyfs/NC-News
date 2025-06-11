@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="styles.css" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NC News API</title>
@@ -33,7 +33,7 @@
             <a class="nav-link" href="#POST-articles">POST /api/articles</a>
           </li>
           <li>
-            <a class="nav-link" href="#get-topics">GET /api/articles</a>
+            <a class="nav-link" href="#get-topics">GET /api/topics</a>
           </li>
           <li>
             <a class="nav-link" href="#get-comments-by-article"
@@ -78,12 +78,12 @@
       </nav>
     </section>
 
-    <section id="get-api">
+    <section class="apisection" id="get-api">
       <h2>GET <code>/api</code></h2>
       <p>Displays this documentation page.</p>
     </section>
 
-    <section id="get-articles">
+    <section class="apisection" id="get-articles">
       <h2>GET <code>/api/articles</code></h2>
       <p>Returns a list of articles from the server.</p>
 
@@ -138,7 +138,7 @@
   ]
 }</code></pre>
     </section>
-    <section id="post-articles">
+    <section class="apisection" id="post-articles">
       <h2>POST <code>/api/articles</code></h2>
       <p>Posts an article to the server and returns the new post</p>
       <h3>POST body parameters</h3>
@@ -171,15 +171,17 @@
         >
       </ul>
       <h3>Example Request</h3>
-      <pre><code>{
+      <pre><code>
+    {
       "author": "icellusedkars",
       "title": "this is a test article",
       "body": "this is an example body",
       "topic": "mitch"
     }</code></pre>
       <h3>Example Response</h3>
-      <pre><code>{
-    "createdArticle" {
+      <pre><code>
+    {
+    "createdArticle": {
         "article_id": 14,
         "title": "this is a test article",
         "topic": "mitch",
@@ -192,7 +194,7 @@
     }
     </code></pre>
     </section>
-    <section id="get-topics">
+    <section class="apisection" id="get-topics">
       <h2>GET <code>/api/topics</code></h2>
       <p>Serves an array of all topics.</p>
 
@@ -207,7 +209,7 @@
 }</code></pre>
     </section>
 
-    <section id="get-users">
+    <section class="apisection" id="get-users">
       <h2>GET <code>/api/users</code></h2>
       <p>Serves an array of all users.</p>
 
@@ -223,7 +225,7 @@
 }</code></pre>
     </section>
 
-    <section id="get-article-by-id">
+    <section class="apisection" id="get-article-by-id">
       <h2>GET <code>/api/articles/:article_id</code></h2>
       <p>Serves the article corresponding to the id provided.</p>
 
@@ -242,7 +244,7 @@
 }</code></pre>
     </section>
 
-    <section id="get-comments-by-article">
+    <section class="apisection" id="get-comments-by-article">
       <h2>GET <code>/api/articles/:article_id/comments</code></h2>
       <p>Serves an array of all comments for a given article.</p>
 
@@ -261,9 +263,9 @@
 }</code></pre>
     </section>
 
-    <section id="patch-article-by-id">
+    <section class="apisection" id="patch-article-by-id">
       <h2>PATCH <code>/api/articles/:article_id</code></h2>
-      <p>Updates votes on the specified article.</p>
+      <p>Updates votes on the specified article if it exists.</p>
 
       <h3>Example Response</h3>
       <pre><code>{
@@ -278,7 +280,7 @@
 }</code></pre>
     </section>
 
-    <section id="post-comment">
+    <section class="apisection" id="post-comment">
       <h2>POST <code>/api/articles/:article_id/comments</code></h2>
       <p>Posts a comment to the specified article and returns it.</p>
 
@@ -302,12 +304,15 @@
 }</code></pre>
     </section>
 
-    <section id="delete-comment">
+    <section class="apisection" id="delete-comment">
       <h2>DELETE <code>/api/comments/:comment_id</code></h2>
-      <p>Deletes the specified comment. Returns statuscode 204 and no data</p>
+      <p>
+        Deletes the specified comment if it exists. Returns statuscode 204 and
+        no data
+      </p>
     </section>
 
-    <section id="get-comment-by-id">
+    <section class="apisection" id="get-comment-by-id">
       <h2>GET <code>/api/comments/:comment_id</code></h2>
       <p>Returns a comment by its ID.</p>
 
@@ -323,10 +328,12 @@
   }
 }</code></pre>
     </section>
-
-    <section id="patch-comment">
+    <section class="apisection" id="patch-comment">
       <h2>PATCH <code>/api/comments/:comment_id</code></h2>
-      <p>Adjusts votes on the comment using the <code>inc_votes</code> key.</p>
+      <p>
+        Adjusts votes on the specified comment (if it exists) using the
+        <code>inc_votes</code> key.
+      </p>
 
       <h3>Example Request</h3>
       <pre><code>{ "inc_votes": -5 }</code></pre>
@@ -343,7 +350,7 @@
 }</code></pre>
     </section>
 
-    <section id="get-user-by-username">
+    <section class="apisection" id="get-user-by-username">
       <h2>GET <code>/api/users/:username</code></h2>
       <p>Returns the user that corresponds to the given username.</p>
 
@@ -357,7 +364,7 @@
 }</code></pre>
     </section>
 
-    <section id="post-topic">
+    <section class="apisection" id="post-topic">
       <h2>POST <code>/api/topics</code></h2>
       <p>Creates a topic and returns the new topic.</p>
 
@@ -377,7 +384,7 @@
 }</code></pre>
     </section>
 
-    <section id="delete-article">
+    <section class="apisection" id="delete-article">
       <h2>DELETE <code>/api/articles/:article_id</code></h2>
       <p>
         Deletes the article with the specified ID. returns statuscode 204 and no
